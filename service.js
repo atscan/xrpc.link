@@ -15,7 +15,10 @@ serve(async (r) => {
   for (const k in Config.redirs) {
     const re = new RegExp(k, "i");
     match = src.pathname?.trim().substring(1).match(re);
-    route = Config.redirs[k];
+    if (match) {
+      route = Config.redirs[k];
+      break;
+    }
   }
   if (!match) {
     return new Response(null, { status: 404 });
@@ -29,8 +32,9 @@ serve(async (r) => {
     route = route.replace("@did", did.did);
   }
   match.forEach((u, i) => (route = route.replace("%" + i, u || "")));
-  const Location = [did?.pds[0] || Config.defaultPds, route.substring(1)].join("/");
-  console.log(`[${src}] => ${Location}`);
+  const Location = [did?.pds[0] || Config.defaultPds, route.substring(1)].join(
+    "/",
+  );
   return new Response("", {
     status: 302,
     headers: { Location },
