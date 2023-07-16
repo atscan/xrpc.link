@@ -4,8 +4,10 @@ const Config = {
   atscan: "https://api.atscan.net",
   defaultPds: "https://bsky.social",
   redirs: {
-    "(gr|getRepo|repo)(/([^\/]+)|)": "/xrpc/com.atproto.sync.getRepo?did=@did",
-    "(ds|describesServer|describe)": "/xrpc/com.atproto.server.describeServer",
+    "(r|repo|getRepo)(/([^\/]+)|)": "/xrpc/com.atproto.sync.getRepo?did=@did",
+    "(i|ds|describe|describesServer)":
+      "/xrpc/com.atproto.server.describeServer",
+    //"(d|did)": "https://api.atscan.net/%1",
   },
 };
 
@@ -32,7 +34,10 @@ serve(async (r) => {
     route = route.replace("@did", did.did);
   }
   match.forEach((u, i) => (route = route.replace("%" + i, u || "")));
-  const Location = [did?.pds[0] || Config.defaultPds, route.substring(1)].join(
+  const Location = [
+    route.indexOf("http") != -1 ? "" : (did?.pds[0] || Config.defaultPds),
+    route.substring(1),
+  ].filter((x) => x).join(
     "/",
   );
   return new Response("", {
