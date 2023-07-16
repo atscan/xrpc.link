@@ -5,7 +5,7 @@ const Config = {
   defaultPds: "https://bsky.social",
   redirs: {
     "(gr|getRepo|repo)(/([^\/]+)|)": "/xrpc/com.atproto.sync.getRepo?did=@did",
-    "(ds|describesServer|describe)": "/crpx/com.atproto.server.describeServer",
+    "(ds|describesServer|describe)": "/xrpx/com.atproto.server.describeServer",
   },
 };
 
