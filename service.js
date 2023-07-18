@@ -14,7 +14,7 @@ router
   // route /
   // ----------------------------
   .get("/", (ctx) => {
-    ctx.response.redirect("https://atscan.net");
+    ctx.response.redirect("https://github.com/atscan/xrpc.link");
   })
   // ----------------------------
   // route /ds/:did - Describe Server
