@@ -4,6 +4,21 @@ class XError extends Error {}
 const Config = {
   atscan: "https://api.atscan.net",
   defaultPds: "https://bsky.social",
+  lexicons: [
+    "com.atproto.admin",
+    "com.atproto.identity",
+    "com.atproto.label",
+    "com.atproto.moderation",
+    "com.atproto.repo",
+    "com.atproto.server",
+    "com.atproto.sync",
+    "app.bsky.actor",
+    "app.bsky.embed",
+    "app.bsky.feed",
+    "app.bsky.graph",
+    "app.bsky.notification",
+    "app.bsky.richtext",
+  ],
 };
 
 const router = new Router();
@@ -17,9 +32,33 @@ router
     ctx.response.redirect("https://github.com/atscan/xrpc.link");
   })
   // ----------------------------
+  // route /docs - AT Proto Documentation
+  // ----------------------------
+  .get("/docs", (ctx) => {
+    ctx.response.redirect("https://atproto.com/docs");
+  })
+  // ----------------------------
+  // route /spec - AT Proto Specification
+  // ----------------------------
+  .get("/(specs|spec)/:page?", (ctx) => {
+    ctx.response.redirect(
+      `https://atproto.com/specs/${ctx.params.page || "atp"}`,
+    );
+  })
+  // ----------------------------
+  // route /spec - AT Proto Specification
+  // ----------------------------
+  .get("/(lex|lexicon|lexicons)/:lexicon?", (ctx) => {
+    ctx.response.redirect(
+      `https://atproto.com/lexicons/${
+        findLex(ctx.params.lexicon).replace(/\./g, "-") || "com-atproto-admin"
+      }`,
+    );
+  })
+  // ----------------------------
   // route /ds/:did - Describe Server
   // ----------------------------
-  .get("/ds/:pds?", async (ctx) => {
+  .get("/(ds|describeServer)/:pds?", async (ctx) => {
     const pds = ctx.params.pds || Config.defaultPds;
     return ctx.response.redirect(
       `https://${
@@ -30,7 +69,7 @@ router
   // ----------------------------
   // route /r/:did - (Get) Repo
   // ----------------------------
-  .get("/r/:did", async (ctx) => {
+  .get("/(r|repo)/:did", async (ctx) => {
     const { did, pds } = await params(ctx);
     return ctx.response.redirect(
       `${pds}/xrpc/com.atproto.sync.getRepo?did=${did}`,
@@ -39,7 +78,7 @@ router
   // ----------------------------
   // route /c/:did - Checkout
   // ----------------------------
-  .get("/c/:did", async (ctx) => {
+  .get("/(c|checkout)/:did", async (ctx) => {
     const { did, pds } = await params(ctx);
     return ctx.response.redirect(
       `${pds}/xrpc/com.atproto.sync.getCheckout?did=${did}`,
@@ -48,6 +87,10 @@ router
 // ----------------------------
 // END OF ROUTES
 // ----------------------------
+
+function findLex(str) {
+  return Config.lexicons.find((l) => l.match(new RegExp(str, "i")));
+}
 
 async function params(ctx) {
   let did = ctx.params.did;
