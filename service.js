@@ -2,7 +2,7 @@ import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 
 class XError extends Error {}
 const Config = {
-  atscan: "https://api.atscan.net",
+  didResolver: "bsky.social",
   defaultPds: "https://bsky.social",
   lexicons: [
     "com.atproto.admin",
@@ -108,7 +108,7 @@ async function params(ctx) {
 }
 
 async function didInfo(str) {
-  return fetch([Config.atscan, str].join("/")).then((r) => {
+  return fetch(`https://${Config.didResolver}/xrpc/com.atproto.identity.resolveHandle?handle=${str}`).then((r) => {
     return r.status === 200 ? r.json() : null;
   });
 }
